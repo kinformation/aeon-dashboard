@@ -1,6 +1,6 @@
 <script>
   import { createEventDispatcher } from 'svelte'
-  import { Chevron, Dropdown, Checkbox } from 'flowbite-svelte'
+  import { Chevron, Dropdown, DropdownDivider, Checkbox } from 'flowbite-svelte'
 
   const dispatch = createEventDispatcher()
 
@@ -8,6 +8,10 @@
   export let dropList = []
 
   let group = []
+
+  function clearAll() {
+    group.length = 0
+  }
 
   $: {
     for (const item of dropList) {
@@ -21,6 +25,12 @@
   <Chevron>{label}</Chevron>
 </div>
 <Dropdown class="max-h-60 overflow-x-auto py-3 space-y-1 text-sm">
+  <li>
+    <div class="flex items-center justify-center hover:underline text-red-700" on:click={clearAll}>
+      CLEAR ALL
+    </div>
+  </li>
+  <DropdownDivider />
   {#each dropList as item}
     {#if item.enable}
       <li class="px-3 hover:bg-sky-500/75">

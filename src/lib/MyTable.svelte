@@ -47,20 +47,34 @@
         return true
       })
     )
-  }
 
-  // $: {
-  //   const updateDropDownList = (list, key) => {
-  //     for (const item of list) {
-  //       item.enable = $selectedStores.map((x) => x[key]).includes(item.text)
-  //       if (!item.enable) item.checked = false
-  //     }
-  //   }
-  //   updateDropDownList(regions, 'region')
-  //   updateDropDownList(prefs, 'pref')
-  //   updateDropDownList(brands, 'brand')
-  //   updateDropDownList(companies, 'company')
-  // }
+    // ドロップダウンメニュー更新
+    const updateDropDownList = (list, key) => {
+      const base = $stores.filter((x) => {
+        if (key !== 'region' && checkedRegions.length > 0 && !checkedRegions.includes(x.region)) {
+          return false
+        }
+        if (key !== 'pref' && checkedPref.length > 0 && !checkedPref.includes(x.pref)) {
+          return false
+        }
+        if (key !== 'brand' && checkedBrad.length > 0 && !checkedBrad.includes(x.brand)) {
+          return false
+        }
+        if (key !== 'company' && checkedCompany.length > 0 && !checkedCompany.includes(x.company)) {
+          return false
+        }
+        return true
+      })
+      for (const item of list) {
+        item.enable = base.map((x) => x[key]).includes(item.text)
+        if (!item.enable) item.checked = false
+      }
+    }
+    updateDropDownList(regions, 'region')
+    updateDropDownList(prefs, 'pref')
+    updateDropDownList(brands, 'brand')
+    updateDropDownList(companies, 'company')
+  }
 </script>
 
 <Table hoverable shadow>

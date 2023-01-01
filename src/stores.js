@@ -36983,7 +36983,9 @@ const storesRow = [
   },
 ]
 export const stores = readable(
-  storesRow.filter((x) => ['イオンモール', 'イオン', 'イオンスタイル'].includes(x.brand))
+  storesRow.filter((x) =>
+    ['イオンモール', 'イオン', 'イオンスタイル', 'イオンタウン'].includes(x.brand)
+  )
 )
 export const selectedStores = writable([])
 
