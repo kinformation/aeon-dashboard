@@ -20,11 +20,13 @@
 <div class="flex items-center whitespace-nowrap">
   <Chevron>{label}</Chevron>
 </div>
-<Dropdown class="py-3 space-y-1 text-sm">
+<Dropdown class="max-h-60 overflow-x-auto py-3 space-y-1 text-sm">
   {#each dropList as item}
-    <li class="px-3 hover:bg-sky-500/75">
-      <Checkbox bind:group value={item.text}>{item.text}</Checkbox>
-    </li>
+    {#if item.enable}
+      <li class="px-3 hover:bg-sky-500/75">
+        <Checkbox bind:group value={item.text}>{item.text}</Checkbox>
+      </li>
+    {/if}
   {/each}
 </Dropdown>
 

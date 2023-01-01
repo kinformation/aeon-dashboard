@@ -9,23 +9,27 @@
   } from 'flowbite-svelte'
 
   import MyDropdown from '$lib/MyDropdown.svelte'
-  import { stores, storesOrg, pos } from '../store.js'
+  import { stores, selectedStores, currentPos } from '../stores.js'
 
-  const regions = [...new Set($storesOrg.map((x) => x.region))].map((x) => {
-    return { text: x, checked: false, enable: true }
-  })
-  const prefs = [...new Set($storesOrg.map((x) => x.pref))].map((x) => {
-    return { text: x, checked: false, enable: true }
-  })
-  const brands = [...new Set($storesOrg.map((x) => x.brand))].map((x) => {
-    return { text: x, checked: false, enable: true }
-  })
-  const companies = [...new Set($storesOrg.map((x) => x.company))].map((x) => {
-    return { text: x, checked: false, enable: true }
-  })
+  // <--- init
+  // プルダウンメニュー生成処理
+  const createDropDownList = (key) => {
+    return [...new Set($stores.map((x) => x[key]))].map((x) => {
+      return { text: x, checked: false, enable: true }
+    })
+  }
+  const regions = createDropDownList('region')
+  const prefs = createDropDownList('pref')
+  const brands = createDropDownList('brand')
+  const companies = createDropDownList('company')
+
+  // 全店舗を初期表示に設定
+  selectedStores.set($stores)
+
+  // init --->
 
   function onRowClick(latLng) {
-    pos.set(latLng)
+    currentPos.set(latLng)
   }
 
   function filter() {
@@ -34,16 +38,29 @@
     const checkedBrad = brands.filter((x) => x.checked).map((x) => x.text)
     const checkedCompany = companies.filter((x) => x.checked).map((x) => x.text)
 
-    const filteredStores = $storesOrg.filter((x) => {
-      if (checkedRegions.length > 0 && !checkedRegions.includes(x.region)) return false
-      if (checkedPref.length > 0 && !checkedPref.includes(x.pref)) return false
-      if (checkedBrad.length > 0 && !checkedBrad.includes(x.brand)) return false
-      if (checkedCompany.length > 0 && !checkedCompany.includes(x.company)) return false
-      return true
-    })
-
-    stores.set(filteredStores)
+    selectedStores.set(
+      $stores.filter((x) => {
+        if (checkedRegions.length > 0 && !checkedRegions.includes(x.region)) return false
+        if (checkedPref.length > 0 && !checkedPref.includes(x.pref)) return false
+        if (checkedBrad.length > 0 && !checkedBrad.includes(x.brand)) return false
+        if (checkedCompany.length > 0 && !checkedCompany.includes(x.company)) return false
+        return true
+      })
+    )
   }
+
+  // $: {
+  //   const updateDropDownList = (list, key) => {
+  //     for (const item of list) {
+  //       item.enable = $selectedStores.map((x) => x[key]).includes(item.text)
+  //       if (!item.enable) item.checked = false
+  //     }
+  //   }
+  //   updateDropDownList(regions, 'region')
+  //   updateDropDownList(prefs, 'pref')
+  //   updateDropDownList(brands, 'brand')
+  //   updateDropDownList(companies, 'company')
+  // }
 </script>
 
 <Table hoverable shadow>
@@ -66,7 +83,7 @@
     </TableHead>
 
     <TableBody>
-      {#each $stores as store}
+      {#each $selectedStores as store}
         <TableBodyRow trClass="hover:!bg-gray-200" on:click={onRowClick([store.lat, store.lng])}>
           {#each ['region', 'pref', 'brand', 'store_name', 'company', 'address'] as item}
             <TableBodyCell tdClass="p-1 whitespace-nowrap font-medium text-sm"
@@ -81,6 +98,8 @@
 
 <style>
   .my-table {
-    height: 35vh;
+    max-height: 35vh;
+    min-height: 35vh;
+    max-width: calc(100vw - 32px);
   }
 </style>

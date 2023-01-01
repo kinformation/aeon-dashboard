@@ -1,6 +1,8 @@
 <script>
   import MyTable from '$lib/MyTable.svelte'
   import MyMap from '$lib/MyMap.svelte'
+  import MyChart from '$lib/MyChart.svelte'
+  import MyChart2 from '$lib/MyChart2.svelte'
 </script>
 
 <main class="p-4">
@@ -16,19 +18,13 @@
       </div>
     </div>
     <div class="grid col-span-2 lg:col-span-1">
-      <div class="chart1-area text-3xl font-bold underline">.col</div>
+      <MyChart />
     </div>
     <div class="grid col-span-2 lg:col-span-1">
-      <div class="chart2-area">.col</div>
+      <MyChart2 />
     </div>
   </div>
 </main>
 
 <style>
-  .chart1-area {
-    background-color: darkorange;
-  }
-  .chart2-area {
-    background-color: chartreuse;
-  }
 </style>
