@@ -15,7 +15,7 @@
   // プルダウンメニュー生成処理
   const createDropDownList = (key) => {
     return [...new Set($stores.map((x) => x[key]))].map((x) => {
-      return { text: x, checked: false, enable: true }
+      return { text: x, count: 0, checked: false, enable: true }
     })
   }
   const regions = createDropDownList('region')
@@ -25,6 +25,7 @@
 
   // 全店舗を初期表示に設定
   selectedStores.set($stores)
+  filter()
 
   // init --->
 
@@ -67,7 +68,11 @@
       })
       for (const item of list) {
         item.enable = base.map((x) => x[key]).includes(item.text)
-        if (!item.enable) item.checked = false
+        if (item.enable) {
+          item.count = base.filter((x) => x[key] === item.text).length
+        } else {
+          item.checked = false
+        }
       }
     }
     updateDropDownList(regions, 'region')

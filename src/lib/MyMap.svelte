@@ -1,16 +1,14 @@
 <script>
   import { onMount, onDestroy } from 'svelte'
   import { browser } from '$app/environment'
-  import { selectedStores, currentPos } from '../stores.js'
-
-  // import ICON_AEONMALL from '$lib/assets/AEONMALL.png'
-  // import ICON_AEON from '$lib/assets/AEON.png'
-  // import ICON_AEONSTYLE from '$lib/assets/AEONSTYLE.jpg'
+  import { selectedStores, currentPos, brandColors } from '../stores.js'
 
   import ICON_AEONMALL from '$lib/assets/aeon_mall.ico'
   import ICON_AEON from '$lib/assets/aeon.ico'
   import ICON_AEONSTYLE from '$lib/assets/aeon_style.ico'
   import ICON_AEONTOWN from '$lib/assets/aeon_town.ico'
+  import ICON_MAXVALU from '$lib/assets/maxvalu.ico'
+  import ICON_BIG from '$lib/assets/big.ico'
 
   let leaflet
   let map
@@ -19,18 +17,17 @@
   // marker 関連
   const centerPos = [36.327665, 136.305237] // 地図の中心ポイント
   let mapMarkers = []
+  //表示範囲設定 左上：右下
+  const maxBounds = [
+    [46, 120],
+    [24, 150],
+  ]
 
   // icon 関連
   const maxIconSize = 40
   const minIconSize = 16
   const mapIcons = []
   let mapDotIcon
-  const brandColors = {
-    イオン: 'text-red-600',
-    イオンモール: 'text-orange-400',
-    イオンスタイル: 'text-yellow-300',
-    イオンタウン: 'text-lime-400',
-  }
 
   // zoom 関連
   const maxZoom = 13
@@ -41,7 +38,7 @@
   onMount(async () => {
     if (browser) {
       leaflet = await import('leaflet')
-      map = leaflet.map(mapElement)
+      map = leaflet.map(mapElement, { maxBounds })
       leaflet
         .tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
           attribution: 'Map data &copy; <a href="https://openstreetmap.org">OpenStreetMap</a>',
@@ -60,6 +57,8 @@
       mapIcons['イオンモール'] = leaflet.icon({ iconUrl: ICON_AEONMALL })
       mapIcons['イオンスタイル'] = leaflet.icon({ iconUrl: ICON_AEONSTYLE })
       mapIcons['イオンタウン'] = leaflet.icon({ iconUrl: ICON_AEONTOWN })
+      mapIcons['マックスバリュ'] = leaflet.icon({ iconUrl: ICON_MAXVALU })
+      mapIcons['ザ・ビッグ'] = leaflet.icon({ iconUrl: ICON_BIG })
 
       // 初期表示位置を日本の中心に設定
       $currentPos = centerPos
@@ -99,13 +98,11 @@
       // 新規マーカーセット
       for (const store of $selectedStores) {
         let icon
-        if (currentZoom < switchIconZoom) {
+        if (currentZoom < switchIconZoom || !mapIcons[store.brand]) {
           icon = mapDotIcon
-          let className = brandColors[store.brand]
-          if (currentZoom > 13) {
-            className += ' text-9xl'
-          } else if (currentZoom > 11) {
-            className += ' text-8xl'
+          let className = $brandColors[store.brand]
+          if (currentZoom > 11) {
+            className += ' text-6xl'
           } else if (currentZoom > 9) {
             className += ' text-4xl'
           } else if (currentZoom > 7) {
