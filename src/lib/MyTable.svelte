@@ -95,7 +95,7 @@
         <MyDropdown label="ブランド" dropList={brands} on:updateChild={filter} />
       </TableHeadCell>
       <TableHeadCell>
-        <MyDropdownSearch label="店舗名" dropList={brands} on:updateChild={filter} />
+        <MyDropdownSearch label="店舗名" on:updateChild={filter} />
       </TableHeadCell>
       <TableHeadCell>
         <MyDropdown label="運営会社" dropList={companies} on:updateChild={filter} />
