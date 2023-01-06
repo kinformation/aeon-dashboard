@@ -1,53 +1,34 @@
 <script>
-  import { createEventDispatcher } from 'svelte'
-  import { Chevron, Dropdown, DropdownDivider, Checkbox } from 'flowbite-svelte'
-  import { brandColors } from '../stores.js'
+  import { Dropdown, Search } from 'flowbite-svelte'
+  import { MagnifyingGlass } from 'svelte-heros-v2'
 
-  const dispatch = createEventDispatcher()
+  import { filteredStores, selectedStore } from '../stores.js'
 
   export let label = ''
-  export let dropList = []
 
-  let group = []
-
-  function clearAll() {
-    group.length = 0
-  }
+  let value = ''
+  let dropList = []
 
   $: {
-    for (const item of dropList) {
-      item.checked = group.includes(item.text)
-    }
-    dispatch('updateChild', dropList)
+    dropList = $filteredStores.filter((x) => x.store_name.indexOf(value) > -1)
+  }
+
+  function onClick(store) {
+    selectedStore.set(store)
   }
 </script>
 
 <div class="flex items-center whitespace-nowrap">
-  <Chevron>{label}</Chevron>
+  <p class="pr-2">{label}</p>
+  <MagnifyingGlass size="14" />
 </div>
 <Dropdown class="max-h-60 overflow-x-auto py-3 text-sm">
-  <li>
-    <div class="flex items-center justify-center hover:underline text-red-700" on:click={clearAll}>
-      CLEAR ALL
-    </div>
-  </li>
-  <DropdownDivider />
-  {#each dropList as item}
-    {#if item.enable}
-      <li class="px-3 hover:bg-sky-500/75">
-        <Checkbox bind:group value={item.text}
-          >{#if $brandColors[item.text]}<p class="dot-icon pr-1 {$brandColors[item.text]}">
-              ●
-            </p>{/if}
-          {item.text} ({item.count})</Checkbox
-        >
-      </li>
-    {/if}
+  <div slot="header" class="p-3">
+    <Search bind:value size="sm" />
+  </div>
+  {#each dropList as store}
+    <li class="px-3 hover:bg-gray-200" on:click={onClick(store)}>
+      {store.store_name}
+    </li>
   {/each}
 </Dropdown>
-
-<style>
-  .dot-icon {
-    font-size: 4px;
-  }
-</style>

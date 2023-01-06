@@ -1,6 +1,8 @@
 <script>
   import { createEventDispatcher } from 'svelte'
-  import { Chevron, Dropdown, DropdownDivider, Checkbox } from 'flowbite-svelte'
+  import { Dropdown, DropdownDivider, Checkbox } from 'flowbite-svelte'
+  import { Funnel } from 'svelte-heros-v2'
+
   import { brandColors } from '../stores.js'
 
   const dispatch = createEventDispatcher()
@@ -23,7 +25,8 @@
 </script>
 
 <div class="flex items-center whitespace-nowrap">
-  <Chevron>{label}</Chevron>
+  <p class="pr-2">{label}</p>
+  <Funnel size="14" variation={group.length === 0 ? 'outline' : 'solid'} />
 </div>
 <Dropdown class="max-h-60 overflow-x-auto py-3 text-sm">
   <li>
@@ -34,7 +37,7 @@
   <DropdownDivider />
   {#each dropList as item}
     {#if item.enable}
-      <li class="px-3 hover:bg-sky-500/75">
+      <li class="px-3 hover:bg-gray-200">
         <Checkbox bind:group value={item.text}
           >{#if $brandColors[item.text]}<p class="dot-icon pr-1 {$brandColors[item.text]}">
               ●

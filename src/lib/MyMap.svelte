@@ -1,7 +1,7 @@
 <script>
   import { onMount, onDestroy } from 'svelte'
   import { browser } from '$app/environment'
-  import { selectedStores, currentPos, brandColors } from '../stores.js'
+  import { filteredStores, selectedStore, brandColors } from '../stores.js'
 
   import ICON_AEONMALL from '$lib/assets/aeon_mall.ico'
   import ICON_AEON from '$lib/assets/aeon.ico'
@@ -61,7 +61,8 @@
       mapIcons['ザ・ビッグ'] = leaflet.icon({ iconUrl: ICON_BIG })
 
       // 初期表示位置を日本の中心に設定
-      $currentPos = centerPos
+      // $currentPos = centerPos
+      map.setView(centerPos, minZoom)
     }
   })
 
@@ -71,16 +72,11 @@
     }
   })
 
-  // $currentPos の watch
+  // $selectedStore の watch
   $: {
-    if (typeof map !== 'undefined') {
-      if (JSON.stringify($currentPos) === JSON.stringify(centerPos)) {
-        // 初期表示位置
-        map.setView($currentPos, minZoom)
-      } else {
-        // 店舗フォーカス
-        map.setView($currentPos)
-      }
+    if (map && $selectedStore) {
+      // 店舗フォーカス
+      map.setView([$selectedStore.lat, $selectedStore.lng])
     }
   }
 
@@ -96,7 +92,7 @@
       mapMarkers.length = 0
 
       // 新規マーカーセット
-      for (const store of $selectedStores) {
+      for (const store of $filteredStores) {
         let icon
         if (currentZoom < switchIconZoom || !mapIcons[store.brand]) {
           icon = mapDotIcon
@@ -121,7 +117,7 @@
           .marker([store.lat, store.lng], { icon })
           .addTo(map)
           .on('click', (ev) => {
-            currentPos.set([store.lat, store.lng])
+            selectedStore.set(store)
             leaflet
               .popup()
               .setLatLng(ev.latlng)

@@ -37024,9 +37024,9 @@ export const stores = readable(
   )
 )
 
-export const selectedStores = writable([])
+export const filteredStores = writable([])
 
-export const currentPos = writable([])
+export const selectedStore = writable()
 
 export const brandColors = readable({
   イオン: 'text-red-600',
@@ -37035,4 +37035,9 @@ export const brandColors = readable({
   イオンタウン: 'text-lime-400',
   マックスバリュ: 'text-green-600',
   'ザ・ビッグ': 'text-cyan-600',
+  // text-blue-600
+  // text-indigo-600
+  // text-purple-600
+  // text-pink-600
+  // text-gray-600
 })

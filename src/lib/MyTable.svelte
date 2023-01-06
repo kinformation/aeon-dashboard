@@ -9,7 +9,8 @@
   } from 'flowbite-svelte'
 
   import MyDropdown from '$lib/MyDropdown.svelte'
-  import { stores, selectedStores, currentPos } from '../stores.js'
+  import MyDropdownSearch from './MyDropdownSearch.svelte'
+  import { stores, filteredStores, selectedStore } from '../stores.js'
 
   // <--- init
   // プルダウンメニュー生成処理
@@ -24,13 +25,12 @@
   const companies = createDropDownList('company')
 
   // 全店舗を初期表示に設定
-  selectedStores.set($stores)
+  filteredStores.set($stores)
   filter()
-
   // init --->
 
-  function onRowClick(latLng) {
-    currentPos.set(latLng)
+  function onRowClick(store) {
+    selectedStore.set(store)
   }
 
   function filter() {
@@ -39,7 +39,7 @@
     const checkedBrad = brands.filter((x) => x.checked).map((x) => x.text)
     const checkedCompany = companies.filter((x) => x.checked).map((x) => x.text)
 
-    selectedStores.set(
+    filteredStores.set(
       $stores.filter((x) => {
         if (checkedRegions.length > 0 && !checkedRegions.includes(x.region)) return false
         if (checkedPref.length > 0 && !checkedPref.includes(x.pref)) return false
@@ -94,7 +94,9 @@
       <TableHeadCell>
         <MyDropdown label="ブランド" dropList={brands} on:updateChild={filter} />
       </TableHeadCell>
-      <TableHeadCell>店舗名</TableHeadCell>
+      <TableHeadCell>
+        <MyDropdownSearch label="店舗名" dropList={brands} on:updateChild={filter} />
+      </TableHeadCell>
       <TableHeadCell>
         <MyDropdown label="運営会社" dropList={companies} on:updateChild={filter} />
       </TableHeadCell>
@@ -102,8 +104,11 @@
     </TableHead>
 
     <TableBody>
-      {#each $selectedStores as store}
-        <TableBodyRow trClass="hover:!bg-gray-200" on:click={onRowClick([store.lat, store.lng])}>
+      {#each $filteredStores as store}
+        <TableBodyRow
+          trClass="hover:!bg-gray-200 {$selectedStore === store ? 'bg-sky-500/75' : ''}"
+          on:click={onRowClick(store)}
+        >
           {#each ['region', 'pref', 'brand', 'store_name', 'company', 'address'] as item}
             <TableBodyCell tdClass="p-1 whitespace-nowrap font-medium text-sm"
               >{store[item]}</TableBodyCell
