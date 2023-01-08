@@ -30,7 +30,11 @@
 </div>
 <Dropdown class="max-h-60 overflow-x-auto py-3 text-sm">
   <li>
-    <div class="flex items-center justify-center hover:underline text-red-700" on:click={clearAll}>
+    <div
+      class="flex items-center justify-center hover:underline text-red-700"
+      on:click={clearAll}
+      on:keypress={clearAll}
+    >
       CLEAR ALL
     </div>
   </li>

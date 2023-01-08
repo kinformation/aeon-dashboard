@@ -11,7 +11,7 @@
 
   let parentGroup = []
   let childGroup = []
-  let childOpenStats = {}
+  let openChildren = {}
 
   const dropListChildText = (parent) => {
     return dropListChild.filter((x) => x.parent === parent.text).map((x) => x.text)
@@ -30,12 +30,6 @@
     } else {
       // OFF
       childGroup = childGroup.filter((x) => !dropListChildText(parent).includes(x))
-    }
-  }
-  function parentHoverHandler(hoverParent) {
-    // parent行のhoverでchildドロップリスト表示
-    for (const parent of dropListParent) {
-      childOpenStats[parent.text] = parent.text === hoverParent.text
     }
   }
 
@@ -76,6 +70,7 @@
     <div
       class="flex items-center justify-center hover:underline text-red-700"
       on:click={clearAllParent}
+      on:keypress={clearAllParent}
     >
       CLEAR ALL
     </div>
@@ -86,16 +81,17 @@
       .filter((x) => x.enable)
       .map((x) => x.parent)
       .includes(parent.text)}
-      <li class="px-3 hover:bg-gray-200" on:mouseenter={parentHoverHandler(parent)}>
+      <li class="px-3 hover:bg-gray-200">
         <Checkbox bind:group={parentGroup} value={parent.text} on:change={onChangeParent(parent)}>
           <Chevron placement="right">{parent.text} ({parent.count})</Chevron>
         </Checkbox>
       </li>
-      <Dropdown placement="right-start" bind:open={childOpenStats[parent.text]}>
+      <Dropdown placement="right-start" trigger="hover" bind:open={openChildren[parent.text]}>
         <li>
           <div
             class="flex items-center justify-center hover:underline text-red-700"
             on:click={clearAllChild(parent)}
+            on:keypress={clearAllChild(parent)}
           >
             CLEAR ALL
           </div>

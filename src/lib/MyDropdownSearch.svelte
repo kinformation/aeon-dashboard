@@ -27,7 +27,7 @@
     <Search bind:value size="sm" />
   </div>
   {#each dropList as store}
-    <li class="px-3 hover:bg-gray-200" on:click={onClick(store)}>
+    <li class="px-3 hover:bg-gray-200" on:click={onClick(store)} on:keypress={onClick(store)}>
       {store.store_name}
     </li>
   {/each}
