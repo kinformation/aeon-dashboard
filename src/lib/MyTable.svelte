@@ -9,6 +9,7 @@
   } from 'flowbite-svelte'
 
   import MyDropdown from '$lib/MyDropdown.svelte'
+  import MyDropdownMulti from './MyDropdownMulti.svelte'
   import MyDropdownSearch from './MyDropdownSearch.svelte'
   import { stores, filteredStores, selectedStore } from '../stores.js'
 
@@ -24,6 +25,15 @@
   const brands = createDropDownList('brand')
   const companies = createDropDownList('company')
 
+  // prefs に regions を紐づけ
+  // 地域と都道府県の対応表 {都道府県名: 地域名,...}
+  const regionPref = [
+    ...new Map($stores.map((x) => [x.pref, { [x.pref]: x.region }])).values(),
+  ].reduce((obj, item) => {
+    return Object.assign(obj, item)
+  }, {})
+  prefs.map((x) => (x.parent = regionPref[x.text]))
+
   // 全店舗を初期表示に設定
   filteredStores.set($stores)
   filter()
@@ -34,14 +44,14 @@
   }
 
   function filter() {
-    const checkedRegions = regions.filter((x) => x.checked).map((x) => x.text)
+    const checkedRegion = regions.filter((x) => x.checked).map((x) => x.text)
     const checkedPref = prefs.filter((x) => x.checked).map((x) => x.text)
     const checkedBrad = brands.filter((x) => x.checked).map((x) => x.text)
     const checkedCompany = companies.filter((x) => x.checked).map((x) => x.text)
 
     filteredStores.set(
       $stores.filter((x) => {
-        if (checkedRegions.length > 0 && !checkedRegions.includes(x.region)) return false
+        if (checkedRegion.length > 0 && !checkedRegion.includes(x.region)) return false
         if (checkedPref.length > 0 && !checkedPref.includes(x.pref)) return false
         if (checkedBrad.length > 0 && !checkedBrad.includes(x.brand)) return false
         if (checkedCompany.length > 0 && !checkedCompany.includes(x.company)) return false
@@ -52,7 +62,7 @@
     // ドロップダウンメニュー更新
     const updateDropDownList = (list, key) => {
       const base = $stores.filter((x) => {
-        if (key !== 'region' && checkedRegions.length > 0 && !checkedRegions.includes(x.region)) {
+        if (key !== 'region' && checkedRegion.length > 0 && !checkedRegion.includes(x.region)) {
           return false
         }
         if (key !== 'pref' && checkedPref.length > 0 && !checkedPref.includes(x.pref)) {
@@ -86,10 +96,20 @@
   <div class="my-table block overflow-auto">
     <TableHead theadClass="text-sm sticky top-0 z-30">
       <TableHeadCell>
-        <MyDropdown label="地域" dropList={regions} on:updateChild={filter} />
+        <MyDropdownMulti
+          label="地域"
+          dropListParent={regions}
+          dropListChild={prefs}
+          on:updateChild={filter}
+        />
       </TableHeadCell>
       <TableHeadCell>
-        <MyDropdown label="都道府県" dropList={prefs} on:updateChild={filter} />
+        <MyDropdownMulti
+          label="都道府県"
+          dropListParent={regions}
+          dropListChild={prefs}
+          on:updateChild={filter}
+        />
       </TableHeadCell>
       <TableHeadCell>
         <MyDropdown label="ブランド" dropList={brands} on:updateChild={filter} />
