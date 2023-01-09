@@ -52,7 +52,7 @@
       })
 
       // マーカーアイコン定義
-      mapDotIcon = leaflet.divIcon({ html: '●' })
+      mapDotIcon = leaflet.divIcon({ html: '<div class="flex justify-center">●</div>' })
       mapIcons['イオン'] = leaflet.icon({ iconUrl: ICON_AEON })
       mapIcons['イオンモール'] = leaflet.icon({ iconUrl: ICON_AEONMALL })
       mapIcons['イオンスタイル'] = leaflet.icon({ iconUrl: ICON_AEONSTYLE })
@@ -122,7 +122,10 @@
               .popup()
               .setLatLng(ev.latlng)
               .setContent(
-                `<p>店舗名：${store.store_name}</p><p>ブランド：${store.brand}</p><p>運営会社：${store.company}</p><p>所在地：${store.address}</p>`
+                `<p class="!m-0">店舗名：${store.store_name}</p>` +
+                  `<p class="!m-0">ブランド：${store.brand}</p>` +
+                  `<p class="!m-0">運営会社：${store.company}</p>` +
+                  `<p class="!m-0">所在地：${store.address}</p>`
               )
               .openOn(map)
           })
