@@ -64,10 +64,10 @@
     dispatch('updateChild', dropListChild)
   }
 
-  $: {
-    parentGroup = dropListParent.filter((x) => x.checked && x.enable).map((x) => x.text)
-    childGroup = dropListChild.filter((x) => x.checked && x.enable).map((x) => x.text)
-  }
+  // $: {
+  //   parentGroup = dropListParent.filter((x) => x.checked && x.enable).map((x) => x.text)
+  //   childGroup = dropListChild.filter((x) => x.checked && x.enable).map((x) => x.text)
+  // }
 </script>
 
 <div class="flex items-center whitespace-nowrap">
