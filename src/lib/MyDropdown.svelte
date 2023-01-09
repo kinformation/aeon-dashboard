@@ -17,9 +17,6 @@
   }
 
   $: {
-    for (const item of dropList) {
-      item.checked = group.includes(item.text)
-    }
     dispatch('updateChild', dropList)
   }
 </script>
@@ -42,7 +39,7 @@
   {#each dropList as item}
     {#if item.enable}
       <li class="px-3 hover:bg-gray-200">
-        <Checkbox bind:group value={item.text}
+        <Checkbox bind:checked={item.checked} bind:group value={item.text}
           >{#if $brandColors[item.text]}<p class="dot-icon pr-1 {$brandColors[item.text]}">
               ●
             </p>{/if}

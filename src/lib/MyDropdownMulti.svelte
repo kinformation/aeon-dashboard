@@ -32,38 +32,47 @@
       childGroup = childGroup.filter((x) => !dropListChildText(parent).includes(x))
     }
   }
+  function setParentCheckboxStatus(parent) {
+    const parentCheckbox = document.querySelector(`input[type='checkbox'][value='${parent.text}']`)
+    const childCount = dropListChildText(parent).reduce((count, x) => {
+      return (count += childGroup.includes(x) ? 1 : 0)
+    }, 0)
+
+    if (childCount === 0) {
+      parentCheckbox.indeterminate = false
+      parentCheckbox.checked = false
+    } else if (childCount === dropListChildText(parent).length) {
+      parentCheckbox.indeterminate = false
+      parentCheckbox.checked = true
+    } else {
+      parentCheckbox.indeterminate = true
+      parentCheckbox.checked = false
+    }
+  }
 
   /* 子向けの処理 */
   function clearAllChild(parent) {
     childGroup = childGroup.filter((x) => !dropListChildText(parent).includes(x))
     parentGroup = parentGroup.filter((x) => x !== parent.text)
   }
-  function onChangeChild(parent, child) {
-    if (childGroup.includes(child.text)) {
-      // ON
-      parentGroup = [...new Set([...parentGroup, parent.text])]
-    } else {
-      // OFF
-      for (const childText of dropListChildText(parent)) {
-        if (childGroup.includes(childText)) {
-          return
-        }
-      }
-      parentGroup = parentGroup.filter((x) => x !== parent.text)
-    }
+  function onChangeChild(parent) {
+    // 子の選択状態によって親のチェックボックス状態を更新
+    setParentCheckboxStatus(parent)
   }
 
   $: {
-    for (const item of dropListChild) {
-      item.checked = childGroup.includes(item.text)
-    }
     dispatch('updateChild', dropListChild)
+  }
+
+  $: {
+    parentGroup = dropListParent.filter((x) => x.checked && x.enable).map((x) => x.text)
+    childGroup = dropListChild.filter((x) => x.checked && x.enable).map((x) => x.text)
   }
 </script>
 
 <div class="flex items-center whitespace-nowrap">
   <p class="pr-2">{label}</p>
-  <Funnel size="14" variation={parentGroup.length === 0 ? 'outline' : 'solid'} />
+  <Funnel size="14" variation={childGroup.length === 0 ? 'outline' : 'solid'} />
 </div>
 <Dropdown class="max-h-60 overflow-x-auto py-3 text-sm">
   <li>
@@ -81,7 +90,7 @@
       .filter((x) => x.enable)
       .map((x) => x.parent)
       .includes(parent.text)}
-      <li class="px-3 hover:bg-gray-200">
+      <li class="px-3 hover:bg-gray-200" on:show={setParentCheckboxStatus(parent)}>
         <Checkbox bind:group={parentGroup} value={parent.text} on:change={onChangeParent(parent)}>
           <Chevron placement="right">{parent.text} ({parent.count})</Chevron>
         </Checkbox>
@@ -101,6 +110,7 @@
           {#if child.parent === parent.text && child.enable}
             <li class="px-3 hover:bg-gray-200">
               <Checkbox
+                bind:checked={child.checked}
                 bind:group={childGroup}
                 value={child.text}
                 on:change={onChangeChild(parent, child)}

@@ -104,12 +104,7 @@
         />
       </TableHeadCell>
       <TableHeadCell>
-        <MyDropdownMulti
-          label="都道府県"
-          dropListParent={regions}
-          dropListChild={prefs}
-          on:updateChild={filter}
-        />
+        <MyDropdown label="都道府県" dropList={prefs} on:updateChild={filter} />
       </TableHeadCell>
       <TableHeadCell>
         <MyDropdown label="ブランド" dropList={brands} on:updateChild={filter} />
