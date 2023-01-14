@@ -1,6 +1,8 @@
 <script>
   import { onMount, onDestroy } from 'svelte'
+  import L from 'leaflet'
   import { browser } from '$app/environment'
+
   import { filteredStores, selectedStore, brandColors } from '../stores.js'
 
   import ICON_AEONMALL from '$lib/assets/aeon_mall.ico'
@@ -10,7 +12,6 @@
   import ICON_MAXVALU from '$lib/assets/maxvalu.ico'
   import ICON_BIG from '$lib/assets/big.ico'
 
-  let leaflet
   let map
   let mapElement
 
@@ -37,14 +38,11 @@
 
   onMount(async () => {
     if (browser) {
-      leaflet = await import('leaflet')
-      map = leaflet.map(mapElement, { maxBounds })
-      leaflet
-        .tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          attribution: 'Map data &copy; <a href="https://openstreetmap.org">OpenStreetMap</a>',
-          minZoom,
-        })
-        .addTo(map)
+      map = L.map(mapElement, { maxBounds })
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: 'Map data &copy; <a href="https://openstreetmap.org">OpenStreetMap</a>',
+        minZoom,
+      }).addTo(map)
 
       // zoom イベント
       map.on('zoom', (ev) => {
@@ -52,13 +50,13 @@
       })
 
       // マーカーアイコン定義
-      mapDotIcon = leaflet.divIcon({ html: '<div class="flex justify-center">●</div>' })
-      mapIcons['イオン'] = leaflet.icon({ iconUrl: ICON_AEON })
-      mapIcons['イオンモール'] = leaflet.icon({ iconUrl: ICON_AEONMALL })
-      mapIcons['イオンスタイル'] = leaflet.icon({ iconUrl: ICON_AEONSTYLE })
-      mapIcons['イオンタウン'] = leaflet.icon({ iconUrl: ICON_AEONTOWN })
-      mapIcons['マックスバリュ'] = leaflet.icon({ iconUrl: ICON_MAXVALU })
-      mapIcons['ザ・ビッグ'] = leaflet.icon({ iconUrl: ICON_BIG })
+      mapDotIcon = L.divIcon({ html: '<div class="flex justify-center">●</div>' })
+      mapIcons['イオン'] = L.icon({ iconUrl: ICON_AEON })
+      mapIcons['イオンモール'] = L.icon({ iconUrl: ICON_AEONMALL })
+      mapIcons['イオンスタイル'] = L.icon({ iconUrl: ICON_AEONSTYLE })
+      mapIcons['イオンタウン'] = L.icon({ iconUrl: ICON_AEONTOWN })
+      mapIcons['マックスバリュ'] = L.icon({ iconUrl: ICON_MAXVALU })
+      mapIcons['ザ・ビッグ'] = L.icon({ iconUrl: ICON_BIG })
 
       // 初期表示位置を日本の中心に設定
       // $currentPos = centerPos
@@ -113,13 +111,11 @@
         icon.options.iconSize = [iconSize, iconSize]
         icon.options.iconAnchor = [iconSize / 2, iconSize / 2]
 
-        const mapMarker = leaflet
-          .marker([store.lat, store.lng], { icon })
+        const mapMarker = L.marker([store.lat, store.lng], { icon })
           .addTo(map)
           .on('click', (ev) => {
             selectedStore.set(store)
-            leaflet
-              .popup()
+            L.popup()
               .setLatLng(ev.latlng)
               .setContent(
                 `<p class="!m-0">店舗名：${store.store_name}</p>` +
