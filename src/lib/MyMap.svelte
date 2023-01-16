@@ -17,7 +17,7 @@
 
   // marker 関連
   const centerPos = [36.327665, 136.305237] // 地図の中心ポイント
-  let mapMarkers = []
+  let mapMarkers = {}
   //表示範囲設定 左上：右下
   const maxBounds = [
     [46, 120],
@@ -59,7 +59,6 @@
       mapIcons['ザ・ビッグ'] = L.icon({ iconUrl: ICON_BIG })
 
       // 初期表示位置を日本の中心に設定
-      // $currentPos = centerPos
       map.setView(centerPos, minZoom)
     }
   })
@@ -71,10 +70,13 @@
   })
 
   // $selectedStore の watch
-  $: {
-    if (map && $selectedStore) {
+  $: focusStore($selectedStore)
+  function focusStore(store) {
+    if (map && store) {
+      // ポップアップ
+      mapMarkers[store.store_name].openPopup()
       // 店舗フォーカス
-      map.setView([$selectedStore.lat, $selectedStore.lng])
+      map.setView([store.lat, store.lng])
     }
   }
 
@@ -82,12 +84,12 @@
   $: {
     if (typeof map !== 'undefined') {
       // 既存マーカークリア
-      for (const mapMarker of mapMarkers) {
-        map.removeLayer(mapMarker)
+      for (const key in mapMarkers) {
+        map.removeLayer(mapMarkers[key])
       }
 
       const iconSize = ((maxIconSize - minIconSize) / (maxZoom - minZoom)) * currentZoom
-      mapMarkers.length = 0
+      mapMarkers.length = {}
 
       // 新規マーカーセット
       for (const store of $filteredStores) {
@@ -113,19 +115,16 @@
 
         const mapMarker = L.marker([store.lat, store.lng], { icon })
           .addTo(map)
-          .on('click', (ev) => {
+          .bindPopup(
+            `<p class="!m-0">店舗名：${store.store_name}</p>` +
+              `<p class="!m-0">ブランド：${store.brand}</p>` +
+              `<p class="!m-0">運営会社：${store.company}</p>` +
+              `<p class="!m-0">所在地：${store.address}</p>`
+          )
+          .on('click', () => {
             selectedStore.set(store)
-            L.popup()
-              .setLatLng(ev.latlng)
-              .setContent(
-                `<p class="!m-0">店舗名：${store.store_name}</p>` +
-                  `<p class="!m-0">ブランド：${store.brand}</p>` +
-                  `<p class="!m-0">運営会社：${store.company}</p>` +
-                  `<p class="!m-0">所在地：${store.address}</p>`
-              )
-              .openOn(map)
           })
-        mapMarkers.push(mapMarker)
+        mapMarkers[store.store_name] = mapMarker
       }
     }
   }

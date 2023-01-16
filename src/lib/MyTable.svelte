@@ -103,9 +103,7 @@
           on:updateChild={filter}
         />
       </TableHeadCell>
-      <TableHeadCell>
-        <MyDropdown label="都道府県" dropList={prefs} on:updateChild={filter} />
-      </TableHeadCell>
+      <TableHeadCell><div class="whitespace-nowrap">都道府県</div></TableHeadCell>
       <TableHeadCell>
         <MyDropdown label="ブランド" dropList={brands} on:updateChild={filter} />
       </TableHeadCell>
@@ -115,7 +113,7 @@
       <TableHeadCell>
         <MyDropdown label="運営会社" dropList={companies} on:updateChild={filter} />
       </TableHeadCell>
-      <TableHeadCell>所在地</TableHeadCell>
+      <TableHeadCell><div class="whitespace-nowrap">所在地</div></TableHeadCell>
     </TableHead>
 
     <TableBody>
