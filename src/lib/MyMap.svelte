@@ -74,7 +74,7 @@
   function focusStore(store) {
     if (map && store) {
       // ポップアップ
-      mapMarkers[store.store_name].openPopup()
+      mapMarkers[store.id].openPopup()
       // 店舗フォーカス
       map.setView([store.lat, store.lng])
     }
@@ -89,7 +89,7 @@
       }
 
       const iconSize = ((maxIconSize - minIconSize) / (maxZoom - minZoom)) * currentZoom
-      mapMarkers.length = {}
+      mapMarkers = {}
 
       // 新規マーカーセット
       for (const store of $filteredStores) {
@@ -124,7 +124,7 @@
           .on('click', () => {
             selectedStore.set(store)
           })
-        mapMarkers[store.store_name] = mapMarker
+        mapMarkers[store.id] = mapMarker
       }
     }
   }

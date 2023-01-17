@@ -36982,12 +36982,16 @@ const storesRow = [
     lat: '26.16309632',
   },
 ]
+storesRow.forEach((store, index) => {
+  store.id = index
+})
+
 export const stores = readable(
   storesRow.filter((x) =>
     [
       // 'イオンショッピングセンター',
       'イオン',
-      'マックスバリュ',
+      // 'マックスバリュ',
       // 'フ－ドセンタ－',
       'イオンモール',
       'ザ・ビッグ',

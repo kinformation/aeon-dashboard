@@ -19,8 +19,7 @@
 
   /* 親向けの処理 */
   function clearAllParent() {
-    parentGroup.length = 0
-    childGroup.length = 0
+    for (const parent of dropListParent) clearAllChild(parent)
   }
   function onChangeParent(parent) {
     // parent ON/OFF に同期して配下の全childを ON/OFF
@@ -52,8 +51,12 @@
 
   /* 子向けの処理 */
   function clearAllChild(parent) {
+    dropListChild.filter((x) => x.parent === parent.text).map((x) => (x.checked = false))
     childGroup = childGroup.filter((x) => !dropListChildText(parent).includes(x))
-    parentGroup = parentGroup.filter((x) => x !== parent.text)
+    // 親階層の状態更新
+    setParentCheckboxStatus(parent)
+    // updateChild をキックするための処理
+    dropListChild = dropListChild
   }
   function onChangeChild(parent) {
     // 子の選択状態によって親のチェックボックス状態を更新
@@ -63,11 +66,6 @@
   $: {
     dispatch('updateChild', dropListChild)
   }
-
-  // $: {
-  //   parentGroup = dropListParent.filter((x) => x.checked && x.enable).map((x) => x.text)
-  //   childGroup = dropListChild.filter((x) => x.checked && x.enable).map((x) => x.text)
-  // }
 </script>
 
 <div class="flex items-center whitespace-nowrap">

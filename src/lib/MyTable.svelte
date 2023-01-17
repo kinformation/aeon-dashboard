@@ -13,7 +13,6 @@
   import MyDropdownSearch from './MyDropdownSearch.svelte'
   import { stores, filteredStores, selectedStore } from '../stores.js'
 
-  // <--- init
   // プルダウンメニュー生成処理
   const createDropDownList = (key) => {
     return [...new Set($stores.map((x) => x[key]))].map((x) => {
@@ -37,7 +36,6 @@
   // 全店舗を初期表示に設定
   filteredStores.set($stores)
   filter()
-  // init --->
 
   function onRowClick(store) {
     selectedStore.set(store)
