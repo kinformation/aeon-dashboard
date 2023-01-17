@@ -82,7 +82,7 @@
 
   // マーカー処理
   $: {
-    if (typeof map !== 'undefined') {
+    if (map) {
       // 既存マーカークリア
       for (const key in mapMarkers) {
         map.removeLayer(mapMarkers[key])
