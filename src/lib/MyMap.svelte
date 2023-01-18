@@ -1,6 +1,7 @@
 <script>
   import { onMount, onDestroy } from 'svelte'
   import L from 'leaflet'
+  import { MarkerClusterGroup } from 'leaflet.markercluster'
   import { browser } from '$app/environment'
 
   import { filteredStores, selectedStore, brandColors } from '../stores.js'
@@ -23,12 +24,14 @@
     [46, 120],
     [24, 150],
   ]
+  let markerLayer
+  let markerClusterGroup
+  const enableCluster = false
 
   // icon 関連
   const maxIconSize = 40
   const minIconSize = 16
   const mapIcons = []
-  let mapDotIcon
 
   // zoom 関連
   const maxZoom = 13
@@ -50,13 +53,21 @@
       })
 
       // マーカーアイコン定義
-      mapDotIcon = L.divIcon({ html: '<div class="flex justify-center">●</div>' })
       mapIcons['イオン'] = L.icon({ iconUrl: ICON_AEON })
       mapIcons['イオンモール'] = L.icon({ iconUrl: ICON_AEONMALL })
       mapIcons['イオンスタイル'] = L.icon({ iconUrl: ICON_AEONSTYLE })
       mapIcons['イオンタウン'] = L.icon({ iconUrl: ICON_AEONTOWN })
       mapIcons['マックスバリュ'] = L.icon({ iconUrl: ICON_MAXVALU })
       mapIcons['ザ・ビッグ'] = L.icon({ iconUrl: ICON_BIG })
+
+      // leaflet.markercluster プラグイン読み込み
+      markerClusterGroup = new MarkerClusterGroup({
+        showCoverageOnHover: false,
+        disableClusteringAtZoom: 8,
+        maxClusterRadius: 50,
+      })
+
+      markerLayer = enableCluster ? markerClusterGroup : L.layerGroup()
 
       // 初期表示位置を日本の中心に設定
       map.setView(centerPos, minZoom)
@@ -84,37 +95,40 @@
   $: {
     if (map) {
       // 既存マーカークリア
-      for (const key in mapMarkers) {
-        map.removeLayer(mapMarkers[key])
+      map.removeLayer(markerLayer)
+      for (const id in mapMarkers) {
+        markerLayer.removeLayer(mapMarkers[id])
       }
-
-      const iconSize = ((maxIconSize - minIconSize) / (maxZoom - minZoom)) * currentZoom
       mapMarkers = {}
 
       // 新規マーカーセット
       for (const store of $filteredStores) {
         let icon
         if (currentZoom < switchIconZoom || !mapIcons[store.brand]) {
-          icon = mapDotIcon
-          let className = $brandColors[store.brand]
+          let circleStyle = $brandColors[store.brand]
           if (currentZoom > 11) {
-            className += ' text-6xl'
+            circleStyle += ' text-6xl'
           } else if (currentZoom > 9) {
-            className += ' text-4xl'
+            circleStyle += ' text-4xl'
           } else if (currentZoom > 7) {
-            className += ' text-2xl'
+            circleStyle += ' text-2xl'
           } else {
-            className += ' text-base'
+            circleStyle += ' text-base'
           }
-          icon.options.className = className
+          icon = L.divIcon({
+            html: `<div class="flex justify-center ${circleStyle}">●</div>`,
+            className: '',
+          })
         } else {
           icon = mapIcons[store.brand]
+          // zoom レベルによってアイコンサイズ変更
+          const iconSize = ((maxIconSize - minIconSize) / (maxZoom - minZoom)) * currentZoom
+          icon.options.iconSize = [iconSize, iconSize]
+          icon.options.iconAnchor = [iconSize / 2, iconSize / 2]
         }
-        icon.options.iconSize = [iconSize, iconSize]
-        icon.options.iconAnchor = [iconSize / 2, iconSize / 2]
 
         const mapMarker = L.marker([store.lat, store.lng], { icon })
-          .addTo(map)
+          .addTo(markerLayer)
           .bindPopup(
             `<p class="!m-0">店舗名：${store.store_name}</p>` +
               `<p class="!m-0">ブランド：${store.brand}</p>` +
@@ -126,6 +140,7 @@
           })
         mapMarkers[store.id] = mapMarker
       }
+      map.addLayer(markerLayer)
     }
   }
 </script>
@@ -136,6 +151,8 @@
 
 <style>
   @import 'leaflet/dist/leaflet.css';
+  @import 'leaflet.markercluster/dist/MarkerCluster.css';
+  @import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
   .my-map div {
     height: 580px;
     width: 100%;
