@@ -11,7 +11,7 @@
 
   let parentGroup = []
   let childGroup = []
-  let openChildren = {}
+  let openParent = false
 
   const dropListChildText = (parent) => {
     return dropListChild.filter((x) => x.parent === parent.text).map((x) => x.text)
@@ -19,7 +19,9 @@
 
   /* 親向けの処理 */
   function clearAllParent() {
-    for (const parent of dropListParent) clearAllChild(parent)
+    dropListParent.forEach((parent) => {
+      if (parent.enable) clearAllChild(parent)
+    })
   }
   function onChangeParent(parent) {
     // parent ON/OFF に同期して配下の全childを ON/OFF
@@ -72,7 +74,12 @@
   <p class="pr-2">{label}</p>
   <Funnel size="14" variation={childGroup.length === 0 ? 'outline' : 'solid'} />
 </div>
-<Dropdown class="max-h-60 overflow-x-auto py-3 text-sm">
+<Dropdown
+  trigger="hover"
+  class="max-h-60 overflow-x-auto py-3 text-sm"
+  bind:open={openParent}
+  on:mouseenter={(openParent = true)}
+>
   <li>
     <div
       class="flex items-center justify-center hover:underline text-red-700"
@@ -90,10 +97,13 @@
       .includes(parent.text)}
       <li class="px-3 hover:bg-gray-200" on:show={setParentCheckboxStatus(parent)}>
         <Checkbox bind:group={parentGroup} value={parent.text} on:change={onChangeParent(parent)}>
-          <Chevron placement="right">{parent.text} ({parent.count})</Chevron>
+          <div class="mr-auto">
+            {parent.text} ({parent.count})
+          </div>
+          <Chevron placement="right" />
         </Checkbox>
       </li>
-      <Dropdown placement="right-start" trigger="hover" bind:open={openChildren[parent.text]}>
+      <Dropdown placement="right-start" trigger="hover">
         <li>
           <div
             class="flex items-center justify-center hover:underline text-red-700"

@@ -22,7 +22,7 @@
   <p class="pr-2">{label}</p>
   <MagnifyingGlass size="14" />
 </div>
-<Dropdown class="max-h-60 overflow-x-auto py-3 text-sm">
+<Dropdown trigger="hover" class="max-h-60 overflow-x-auto py-3 text-sm">
   <div slot="header" class="p-3">
     <Search bind:value size="sm" />
   </div>

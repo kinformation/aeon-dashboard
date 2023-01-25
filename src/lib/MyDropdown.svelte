@@ -25,7 +25,7 @@
   <p class="pr-2">{label}</p>
   <Funnel size="14" variation={group.length === 0 ? 'outline' : 'solid'} />
 </div>
-<Dropdown class="max-h-60 overflow-x-auto py-3 text-sm">
+<Dropdown trigger="hover" class="max-h-60 overflow-x-auto py-3 text-sm">
   <li>
     <div
       class="flex items-center justify-center hover:underline text-red-700"
