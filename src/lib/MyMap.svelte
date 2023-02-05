@@ -2,6 +2,8 @@
   import { onMount, onDestroy } from 'svelte'
   import L from 'leaflet'
   import { MarkerClusterGroup } from 'leaflet.markercluster'
+  import { EasyButton } from '$lib/easy-button/easy-button'
+
   import { browser } from '$app/environment'
 
   import { filteredStores, selectedStore, brandColors } from '../stores.js'
@@ -26,7 +28,7 @@
   ]
   let markerLayer
   let markerClusterGroup
-  const enableCluster = false
+  let enableCluster = false
 
   // icon 関連
   const maxIconSize = 40
@@ -67,7 +69,14 @@
         maxClusterRadius: 50,
       })
 
-      markerLayer = enableCluster ? markerClusterGroup : L.layerGroup()
+      // leaflet.EasyButton プラグイン読み込み
+      EasyButton(L)
+      L.easyButton('fa-object-group', function () {
+        enableCluster = !enableCluster
+      }).addTo(map)
+
+      // マーカーレイヤの初期状態をクラスタなしに設定
+      markerLayer = L.layerGroup()
 
       // 初期表示位置を日本の中心に設定
       map.setView(centerPos, minZoom)
@@ -100,6 +109,8 @@
         markerLayer.removeLayer(mapMarkers[id])
       }
       mapMarkers = {}
+
+      markerLayer = enableCluster ? markerClusterGroup : L.layerGroup()
 
       // 新規マーカーセット
       for (const store of $filteredStores) {
@@ -149,10 +160,16 @@
   <div bind:this={mapElement} />
 </div>
 
+<svelte:head>
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" />
+  <script defer src="https://use.fontawesome.com/releases/v5.15.4/js/all.js"></script>
+</svelte:head>
+
 <style>
   @import 'leaflet/dist/leaflet.css';
   @import 'leaflet.markercluster/dist/MarkerCluster.css';
   @import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
+  @import '$lib/easy-button/easy-button.css';
   .my-map div {
     height: 580px;
     width: 100%;
