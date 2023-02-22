@@ -10,6 +10,7 @@ export default {
     async get() {
       // const { data } = await supabase.from('stores').select('*')
       // return data
+      console.log(import.meta.env)
       return [
         {
           id: 2,
