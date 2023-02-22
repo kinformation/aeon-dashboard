@@ -11,6 +11,8 @@ export default {
       // const { data } = await supabase.from('stores').select('*')
       // return data
       console.log(import.meta.env)
+      console.log(process.env)
+      console.log(process.env)
       return [
         {
           id: 2,
