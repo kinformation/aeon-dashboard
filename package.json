@@ -33,6 +33,7 @@
   },
   "type": "module",
   "dependencies": {
+    "@supabase/supabase-js": "^2.8.0",
     "leaflet": "^1.9.3",
     "leaflet.markercluster": "^1.5.3",
     "svelte-frappe-charts": "^1.10.0"
