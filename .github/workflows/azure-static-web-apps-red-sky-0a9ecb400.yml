@@ -31,6 +31,9 @@ jobs:
           api_location: 'build/server' # Api source code path - optional
           output_location: 'build/static' # Built app content directory - optional
           ###### End of Repository/Build Configurations ######
+        env:
+          VITE_SUPABASE_URL: 'https://uollqpdlbjalxenckagc.supabase.co'
+          VITE_SUPABASE_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVvbGxxcGRsYmphbHhlbmNrYWdjIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTY3NjM3OTEyNywiZXhwIjoxOTkxOTU1MTI3fQ.hSEAQqIKn0i5CsSSyDi9CEbMlb8C7Jc3ZUE4TbMY7mM'
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
